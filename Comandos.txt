@@ -1,0 +1,5 @@
+
+https://medium.com/react-native-training/react-native-animations-using-the-animated-api-ebe8e0669fae
+
+
+https://blog.hellojs.org/testing-react-native-and-redux-e5a71b99e178
