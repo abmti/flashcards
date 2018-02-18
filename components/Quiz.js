@@ -1,11 +1,8 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import { Button, Text, View, StyleSheet, Animated, Easing } from 'react-native';
-import { Button as Btn } from 'react-native-elements'
-
-
-import * as API from '../utils/api'
-import { removeDeck } from "../actions/index";
+import React, {Component} from 'react';
+import {connect} from 'react-redux'
+import {Animated, Button, Easing, StyleSheet, Text, View} from 'react-native';
+import {Button as Btn} from 'react-native-elements'
+import {clearLocalNotification, setLocalNotification} from "../utils/helpers";
 
 class Quiz extends Component {
 
@@ -13,6 +10,7 @@ class Quiz extends Component {
         index: 0,
         showAnswer: false,
         corrects: 0,
+        incorrects: 0,
         opacity: new Animated.Value(1),
     }
 
@@ -36,18 +34,74 @@ class Quiz extends Component {
             this.setState({incorrects: (this.state.incorrects + 1)})
         }
         this.setState({index: (this.state.index + 1), showAnswer: false})
+
+        const deck = this.props.decks[this.props.navigation.state.params.keyDeck]
+        if(this.state.index >= deck.questions.length) {
+            console.debug('Clear and SetNotifications')
+            clearLocalNotification().then(setLocalNotification())
+        }
+
     }
 
     restartQuiz = () => {
         this.setState({index: 0, corrects: 0, incorrects: 0, showAnswer: false})
     }
 
+    renderQuiz = (deck, index) => {
+        const animatedText = index < deck.questions.length ? (this.state.showAnswer ? deck.questions[this.state.index].answer : deck.questions[this.state.index].question) : ''
+        return (
+            <View>
+                <Text style={styles.subTitle}>
+                    {this.state.index+1}/{deck.questions.length}
+                </Text>
+
+                <Animated.Text style={[styles.text, {opacity: this.state.opacity}]}>
+                    {animatedText}
+                </Animated.Text>
+
+                <Button onPress={this.toogleQuestionAndAnswer} title={`${this.state.showAnswer ? 'Show Question' : 'Show Answer'} `}/>
+
+                <Btn onPress={() => this.submitAnswer(true)}
+                     buttonStyle={{backgroundColor: 'green', width: null, height: 40, marginTop: 30}}
+                     textStyle={{color: 'white', marginHorizontal: 20}}
+                     title='Correct'
+                     disabled={!this.state.showAnswer}
+                />
+
+                <Btn onPress={() => this.submitAnswer(false)}
+                     buttonStyle={{backgroundColor: 'red', width: null, height: 40, marginTop: 5}}
+                     textStyle={{color: 'white', marginHorizontal: 20}}
+                     title='Incorrect'
+                     disabled={!this.state.showAnswer}
+                />
+            </View>
+        )
+    }
+
+    renderEndQuiz = () => (
+        <View>
+            <Text style={styles.subTitle}>
+                End QUIZ
+            </Text>
+            <Text style={styles.subTitle}>
+                Correct: {this.state.corrects}
+            </Text>
+            <Text style={styles.subTitle}>
+                Incorrect: {this.state.incorrects}
+            </Text>
+
+            <Button onPress={this.restartQuiz} title='Restart Quiz'/>
+
+            <Button onPress={() => this.props.navigation.goBack()} title='Back to Deck'/>
+
+        </View>
+    )
+
     render() {
         const {navigation, decks} = this.props
         const keyDeck = navigation.state.params.keyDeck
         const deck = decks[keyDeck]
         const index = this.state.index
-        const animatedText = index < deck.questions.length ? (this.state.showAnswer ? deck.questions[this.state.index].answer : deck.questions[this.state.index].question) : ''
 
         return (
             <View style={styles.container}>
@@ -56,51 +110,10 @@ class Quiz extends Component {
                 </Text>
 
                 {index < deck.questions.length ? (
-
-                    <View>
-                        <Text style={styles.subTitle}>
-                            {this.state.index+1}/{deck.questions.length}
-                        </Text>
-
-                        <Animated.Text style={[styles.text, {opacity: this.state.opacity}]}>
-                            {animatedText}
-                        </Animated.Text>
-
-                        <Button onPress={this.toogleQuestionAndAnswer} title={`${this.state.showAnswer ? 'Show Question' : 'Show Answer'} `}/>
-
-                        <Btn onPress={() => this.submitAnswer(true)}
-                            buttonStyle={{backgroundColor: 'green', width: null, height: 40, marginTop: 30}}
-                            textStyle={{color: 'white', marginHorizontal: 20}}
-                            title='Correct'
-                        />
-
-                        <Btn onPress={() => this.submitAnswer(false)}
-                            buttonStyle={{backgroundColor: 'red', width: null, height: 40, marginTop: 5}}
-                            textStyle={{color: 'white', marginHorizontal: 20}}
-                            title='Incorrect'
-                        />
-                    </View>
-
+                    this.renderQuiz(deck, index)
                 ) : (
-
-                    <View>
-                        <Text style={styles.subTitle}>
-                            End QUIZ
-                        </Text>
-                        <Text style={styles.subTitle}>
-                            Correct: {this.state.corrects}
-                        </Text>
-                        <Text style={styles.subTitle}>
-                            Incorrect: {this.state.incorrects}
-                        </Text>
-
-                        <Button onPress={this.restartQuiz} title='Restart Quiz'/>
-
-                    </View>
-
+                    this.renderEndQuiz()
                 )}
-
-
             </View>
         )
     }

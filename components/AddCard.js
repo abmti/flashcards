@@ -8,6 +8,10 @@ import { addCard } from "../actions/index";
 
 class AddCard extends Component {
 
+    static navigationOptions = {
+        headerTitle: 'Add Card',
+    };
+
     state = {
         question: '',
         answer: ''
@@ -30,7 +34,7 @@ class AddCard extends Component {
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>Add new deck</Text>
+                    <Text style={styles.title}>Add new card</Text>
 
                     <TextInput
                         value={this.state.question}

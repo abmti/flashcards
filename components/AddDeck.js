@@ -32,7 +32,7 @@ class AddDeck extends Component {
         API.addDeck(key, deck).then(() => {
             dispatch(addDeck(key, deck))
             this.setState({title: ''})
-            navigation.navigate('DecksTab')
+            navigation.navigate('DeckDetail', {keyDeck: key})
         })
 
     }

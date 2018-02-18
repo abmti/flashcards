@@ -14,29 +14,26 @@ const DecksListTab = StackNavigator({
         screen: DecksList,
         navigationOptions: {
             title: 'Decks',
-        },
+        }
     },
     DeckDetail: {
         screen: DeckDetail,
         path: '/decks/:keyDeck',
         navigationOptions: {
-            title: 'Decks Detail',
-        },
+            title: 'Deck Detail'
+        }
     },
     AddCard: {
         screen: AddCard,
         path: '/addCard/:keyDeck',
-        navigationOptions: {
-            title: 'Add Deck',
-        },
     },
     Quiz: {
         screen: Quiz,
         path: '/quiz/:keyDeck',
         navigationOptions: {
-            title: 'Quiz',
-        },
-    },
+            title: 'Quiz'
+        }
+    }
 });
 
 const AddDeckTab = StackNavigator({

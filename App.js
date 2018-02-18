@@ -4,12 +4,11 @@ import { Provider } from 'react-redux'
 import reducer from './reducers'
 
 import AppNavigator from './components/AppNavigator'
-import { clearLocalNotification, setLocalNotification } from './utils/helpers'
+import { setLocalNotification } from './utils/helpers'
 
 export default class App extends React.Component {
 
     componentDidMount() {
-        clearLocalNotification()
         setLocalNotification()
     }
 
